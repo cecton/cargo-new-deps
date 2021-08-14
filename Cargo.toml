@@ -1,6 +1,6 @@
 [package]
 name = "cargo-new-deps"
-version = "0.0.0"
+version = "0.1.0"
 edition = "2018"
 description = "List the newly added dependencies and their features."
 repository = "https://github.com/cecton/cargo-new-deps"
