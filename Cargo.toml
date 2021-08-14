@@ -1,0 +1,23 @@
+[package]
+name = "cargo-new-deps"
+version = "0.0.0"
+edition = "2018"
+description = "List the newly added dependencies and their features."
+repository = "https://github.com/cecton/cargo-new-deps"
+homepage = "https://github.com/cecton/cargo-new-deps"
+readme = "README.md"
+keywords = ["cargo", "dependency", "features"]
+categories = ["development-tools::cargo-plugins"]
+license = "MIT OR Apache-2.0"
+
+[dependencies]
+ansi_term = "0.12"
+anyhow = "1"
+cargo_metadata = "0.14"
+indexmap = "1"
+structopt = "0.3"
+tempfile = "3"
+url = "2"
+
+[dev-dependencies]
+prettydiff = { version = "0.5.0", default-features = false }
