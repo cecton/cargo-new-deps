@@ -1,7 +1,12 @@
+[![Latest Version](https://img.shields.io/crates/v/cargo-new-deps.svg)](https://crates.io/crates/cargo-new-deps)
+![License](https://img.shields.io/crates/l/cargo-new-deps)
+
 cargo-new-deps
 ==============
 
 List the newly added dependencies and their features.
+
+Example:
 
 ```
 $ cargo new-deps
@@ -37,4 +42,11 @@ tracing-serde pulled by: tracing-subscriber
 tracing-subscriber pulled by: tracing-bunyan-formatter, tracing-test
 tracing-test pulled by: execution, query-planner, server
 tracing-test-macro pulled by: tracing-test
+```
+
+Installation
+------------
+
+```
+cargo install cargo-new-deps
 ```
