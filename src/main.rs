@@ -1,6 +1,6 @@
 use anyhow::{ensure, Context, Result};
 use cargo_metadata::{Metadata, MetadataCommand, Package, PackageId};
-use indexmap::IndexMap;
+use indexmap::{IndexMap, IndexSet};
 use std::collections::{HashMap, HashSet};
 use std::path::{Path, PathBuf};
 use std::process::{Command, Stdio};
@@ -151,7 +151,7 @@ impl<'a> MetadataDiff<'a> {
 
     pub fn collect_new_dependencies(
         &'a self,
-    ) -> IndexMap<(&'a PackageId, Vec<&'a str>), Vec<&'a PackageId>> {
+    ) -> IndexMap<(&'a PackageId, Vec<&'a str>), IndexSet<&'a PackageId>> {
         let old_deps = Self::collect_dependencies(&self.old_metadata, &self.old_map);
         let new_deps = Self::collect_dependencies(&self.new_metadata, &self.new_map);
         let diff = new_deps
@@ -169,11 +169,14 @@ impl<'a> MetadataDiff<'a> {
                     let mut features = features.into_iter().collect::<Vec<_>>();
                     features.sort_unstable();
                     acc.entry((dep_id, features))
-                        .or_insert(Vec::new())
-                        .push(parent_id);
+                        .or_insert(IndexSet::new())
+                        .insert(parent_id);
                     acc
                 });
         new_packages.sort_keys();
+        for parents in new_packages.values_mut() {
+            parents.sort();
+        }
 
         new_packages
     }
@@ -186,16 +189,6 @@ impl<'a> MetadataDiff<'a> {
         metadata: &'a Metadata,
         map: &'a HashMap<&'a PackageId, &'a Package>,
     ) -> Vec<(&'a PackageId, HashSet<&'a str>, &'a PackageId)> {
-        let first_level_dependencies = metadata
-            .resolve
-            .as_ref()
-            .unwrap()
-            .nodes
-            .iter()
-            .filter(|node| metadata.workspace_members.contains(&node.id))
-            .flat_map(|node| &node.dependencies)
-            .collect::<HashSet<_>>();
-
         metadata
             .resolve
             .as_ref()
@@ -240,7 +233,6 @@ impl<'a> MetadataDiff<'a> {
 
                 (&parent_package.id, dep_features, &dep_package.id)
             })
-            .filter(|(parent_id, _, _)| first_level_dependencies.contains(parent_id))
             .collect()
     }
 }
